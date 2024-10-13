@@ -1,13 +1,27 @@
 version: '3'
 services:
-  postgres:
+  libraryDB:
     image: postgres
-    container_name: postgres
+    container_name: library
     restart: always
     environment:
+      POSTGRES_USER: root
       POSTGRES_PASSWORD: root
+      POSTGRES_DB: library
     ports:
       - "5432:5432"
+    networks:
+      - golang
+  studentDB:
+    image: postgres
+    container_name: student
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: student
+    ports:
+      - "5433:5432"
     networks:
       - golang
 networks:

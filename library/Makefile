@@ -16,9 +16,10 @@ goose_down:
 
 goose_reset:
 	goose -dir $(GOOSE_MIGRATION_DIR) $(GOOSE_DRIVER) $(GOOSE_DBSTRING) reset
-
+wire:
+	wire ./internal/wire
 sqlgen:
 	sqlc generate
 swag:
 	swag init -g ./cmd/server/main.go -o ./docs
-.PHONY: run goose_create goose_up goose_down goose_reset sqlgen swag
+.PHONY: run goose_create goose_up goose_down goose_reset sqlgen swag wire

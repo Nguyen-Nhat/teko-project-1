@@ -1,11 +1,11 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS "Author" (
-    "id" integer PRIMARY KEY,
+    "id" serial PRIMARY KEY,
     "fullname" varchar NOT NULL DEFAULT '',
     "dob" date,
-    "created_at" timestamp NOT NULL,
-    "updated_at" timestamp NOT NULL
+    "created_at" timestamp NOT NULL DEFAULT now(),
+    "updated_at" timestamp NOT NULL DEFAULT now()
 );
 -- +goose StatementEnd
 

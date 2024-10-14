@@ -20,5 +20,6 @@ goose_reset:
 	goose -dir $(GOOSE_MIGRATION_DIR) $(GOOSE_DRIVER) $(GOOSE_DBSTRING) reset
 swag:
 	swag init -g ./cmd/server/main.go -o ./docs
-
-.PHONY: run goose_create goose_up goose_down goose_reset swag
+wire:
+	wire ./internal/wire
+.PHONY: run goose_create goose_up goose_down goose_reset swag wire

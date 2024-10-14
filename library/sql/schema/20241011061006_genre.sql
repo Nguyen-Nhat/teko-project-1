@@ -1,10 +1,10 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS "Genre" (
-    "id" integer PRIMARY KEY,
+    "id" serial PRIMARY KEY,
     "name" varchar NOT NULL DEFAULT '',
-    "created_at" timestamp NOT NULL,
-    "updated_at" timestamp NOT NULL
+    "created_at" timestamp NOT NULL DEFAULT now(),
+    "updated_at" timestamp NOT NULL DEFAULT now()
 );
 -- +goose StatementEnd
 

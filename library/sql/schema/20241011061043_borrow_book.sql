@@ -1,13 +1,13 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS "Borrow_Book" (
-    "id" integer PRIMARY KEY,
+    "id" serial PRIMARY KEY,
     "student_id" integer NOT NULL,
     "borrow_date" date NOT NULL,
     "return_date" date NOT NULL,
     "is_return" boolean NOT NULL DEFAULT false,
-    "created_at" timestamp NOT NULL,
-    "updated_at" timestamp NOT NULL
+    "created_at" timestamp NOT NULL DEFAULT now(),
+    "updated_at" timestamp NOT NULL DEFAULT now()
 );
 -- +goose StatementEnd
 

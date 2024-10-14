@@ -12,7 +12,8 @@ func (br *BookRouter) InitBookRouter(Router *gin.RouterGroup) {
 	bookController := wire.InitBookRouterHandler()
 	bookRouter := Router.Group("/book")
 	{
-		bookRouter.GET("/test1", bookController.GetAll)
-		bookRouter.POST("/test2")
+		bookRouter.POST("", bookController.CreateBook)
+		bookRouter.PUT("/:book_id/add-genre/:genre_id", bookController.AddGenreToBook)
+		bookRouter.PUT("/:book_id/add-genre/:author_id", bookController.AddAuthorToBook)
 	}
 }

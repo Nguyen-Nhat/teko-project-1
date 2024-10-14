@@ -11,10 +11,26 @@ import (
 	"library/internal/service"
 )
 
+// Injectors from author.wire.go:
+
+func InitAuthorRouterHandler() *controller.AuthorController {
+	iAuthorService := service.NewAuthorService()
+	authorController := controller.NewAuthorController(iAuthorService)
+	return authorController
+}
+
 // Injectors from book.wire.go:
 
 func InitBookRouterHandler() *controller.BookController {
 	iBookService := service.NewBookService()
 	bookController := controller.NewBookController(iBookService)
 	return bookController
+}
+
+// Injectors from genre.wire.go:
+
+func InitGenreRouterHandler() *controller.GenreController {
+	iGenreService := service.NewGenreService()
+	genreController := controller.NewGenreController(iGenreService)
+	return genreController
 }

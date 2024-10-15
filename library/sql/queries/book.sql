@@ -14,11 +14,15 @@ WHERE id = $1;
 
 
 -- name: GetPageBookWithFilter :many
-SELECT b.*
+SELECT DISTINCT b.*
 FROM "Book" as b
-INNER JOIN "Book_Genre" as bg
+LEFT JOIN "Book_Genre" as bg
 ON b.id == bg.book_id
-INNER JOIN "Book_Author" as ba
+LEFT JOIN "Book_Author" as ba
 ON b.id == ba.book_id
+WHERE
+    (sqlc.narg(title)::text IS NULL OR b.title ILIKE '%' || sqlc.narg(title)::text || '%')
+    AND (sqlc.narg(authorId)::int IS NULL OR ba.author_id = sqlc.narg(authorId)::int)
+    AND (sqlc.narg(genreId)::int IS NULL OR bg.genre_id = sqlc.narg(genreId)::int)
 LIMIT sqlc.arg(size)
 OFFSET sqlc.arg(size) * (sqlc.arg(page)::INTEGER - 1);

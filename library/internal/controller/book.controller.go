@@ -99,6 +99,7 @@ func (bc *BookController) GetBookDetailById(ctx *gin.Context) {
 }
 func (bc *BookController) GetPageBookWithFilter(ctx *gin.Context) {
 	var query req.BookPageDto
+	query.SetDefaultPageInfo()
 	if err := ctx.ShouldBindQuery(&query); err != nil {
 		response.Response(ctx, response.CodeInvalidRequestParam, nil)
 		return

@@ -12,6 +12,7 @@ func (br *AuthorRouter) InitAuthorRouter(Router *gin.RouterGroup) {
 	authorController := wire.InitAuthorRouterHandler()
 	authorRouter := Router.Group("author")
 	{
+		authorRouter.GET("/:author_id", authorController.GetAuthorById)
 		authorRouter.POST("", authorController.CreateAuthor)
 	}
 

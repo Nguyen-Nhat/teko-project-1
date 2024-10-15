@@ -11,6 +11,7 @@ import (
 )
 
 type IAuthorService interface {
+	GetAuthorById(ctx context.Context, id int) (*database.Author, int, error)
 	CreateAuthor(ctx context.Context, data *request.AuthorPostDto) (*database.Author, int, error)
 }
 
@@ -30,7 +31,7 @@ func (as *authorService) CreateAuthor(ctx context.Context, data *request.AuthorP
 	tx, _ := as.db.BeginTx(ctx, nil)
 	q := as.repository.WithTx(tx)
 	params := database.CreateAuthorParams{
-		Fullname: data.Fullname,
+		Fullname: data.FullName,
 		Dob:      util.ToNullTime(data.Dob),
 	}
 	result, err := q.CreateAuthor(ctx, params)
@@ -40,4 +41,11 @@ func (as *authorService) CreateAuthor(ctx context.Context, data *request.AuthorP
 	}
 	_ = tx.Commit()
 	return &result, response.CodeCreated, nil
+}
+func (as *authorService) GetAuthorById(ctx context.Context, id int) (*database.Author, int, error) {
+	result, err := as.repository.GetAuthorByID(ctx, int32(id))
+	if err != nil {
+		return nil, response.CodeGenreNotFound, err
+	}
+	return &result, response.CodeSuccess, nil
 }

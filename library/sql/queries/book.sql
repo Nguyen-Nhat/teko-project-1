@@ -12,6 +12,7 @@ SELECT b.*
 FROM "Book" as b
 WHERE id = $1;
 
+
 -- name: GetPageBooks :many
 SELECT b.*
 FROM "Book" as b

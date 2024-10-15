@@ -10,6 +10,7 @@ import (
 )
 
 type IGenreService interface {
+	GetGenreById(ctx context.Context, id int) (*database.Genre, int, error)
 	CreateGenre(ctx context.Context, data *request.GenrePostDto) (*database.Genre, int, error)
 }
 
@@ -35,4 +36,12 @@ func (gs *genreService) CreateGenre(ctx context.Context, data *request.GenrePost
 	}
 	_ = tx.Commit()
 	return &result, response.CodeCreated, nil
+}
+
+func (gs *genreService) GetGenreById(ctx context.Context, id int) (*database.Genre, int, error) {
+	result, err := gs.repository.GetGenreByID(ctx, int32(id))
+	if err != nil {
+		return nil, response.CodeGenreNotFound, err
+	}
+	return &result, response.CodeSuccess, nil
 }

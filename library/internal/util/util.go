@@ -16,3 +16,5 @@ func ToNullTime(t *time.Time) sql.NullTime {
 		Valid: true,
 	}
 }
+func temp() {
+}

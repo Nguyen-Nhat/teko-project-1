@@ -5,14 +5,13 @@ import (
 	"database/sql"
 	"library/global"
 	"library/internal/database"
-	"library/internal/dto/request"
-	"library/internal/util"
+	"library/internal/dto/req"
 	"library/pkg/response"
 )
 
 type IAuthorService interface {
 	GetAuthorById(ctx context.Context, id int) (*database.Author, int, error)
-	CreateAuthor(ctx context.Context, data *request.AuthorPostDto) (*database.Author, int, error)
+	CreateAuthor(ctx context.Context, data *req.AuthorPostDto) (*database.Author, int, error)
 }
 
 type authorService struct {
@@ -27,12 +26,16 @@ func NewAuthorService() IAuthorService {
 	}
 }
 
-func (as *authorService) CreateAuthor(ctx context.Context, data *request.AuthorPostDto) (*database.Author, int, error) {
+func (as *authorService) CreateAuthor(ctx context.Context, data *req.AuthorPostDto) (*database.Author, int, error) {
 	tx, _ := as.db.BeginTx(ctx, nil)
 	q := as.repository.WithTx(tx)
+
+	dob := sql.NullTime{}
+	_ = dob.Scan(data.Dob)
+
 	params := database.CreateAuthorParams{
 		Fullname: data.FullName,
-		Dob:      util.ToNullTime(data.Dob),
+		Dob:      dob,
 	}
 	result, err := q.CreateAuthor(ctx, params)
 	if err != nil {

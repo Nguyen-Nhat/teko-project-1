@@ -45,3 +45,18 @@ func (q *Queries) InsertBookAuthor(ctx context.Context, arg InsertBookAuthorPara
 	err := row.Scan(&i.ID, &i.BookID, &i.AuthorID)
 	return i, err
 }
+
+const removeBookAuthor = `-- name: RemoveBookAuthor :exec
+DELETE FROM "Book_Author" ba
+WHERE ba.book_id = $1 AND ba.author_id = $2
+`
+
+type RemoveBookAuthorParams struct {
+	BookID   int32
+	AuthorID int32
+}
+
+func (q *Queries) RemoveBookAuthor(ctx context.Context, arg RemoveBookAuthorParams) error {
+	_, err := q.db.ExecContext(ctx, removeBookAuthor, arg.BookID, arg.AuthorID)
+	return err
+}

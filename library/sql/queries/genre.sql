@@ -21,4 +21,5 @@ OFFSET sqlc.arg(size) * (sqlc.arg(page)::INTEGER - 1);
 -- name: GetGenreByBookID :many
 SELECT g.*
 FROM "Genre" as g INNER JOIN "Book_Genre" as bg
-ON g.id = bg.genre_id;
+ON g.id = bg.genre_id
+WHERE bg.book_id = $1;

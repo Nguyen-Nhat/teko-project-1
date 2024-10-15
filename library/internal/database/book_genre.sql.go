@@ -45,3 +45,18 @@ func (q *Queries) InsertBookGenre(ctx context.Context, arg InsertBookGenreParams
 	err := row.Scan(&i.ID, &i.BookID, &i.GenreID)
 	return i, err
 }
+
+const removeBookGenre = `-- name: RemoveBookGenre :exec
+DELETE FROM "Book_Genre" bg
+WHERE bg.book_id = $1 AND bg.genre_id = $2
+`
+
+type RemoveBookGenreParams struct {
+	BookID  int32
+	GenreID int32
+}
+
+func (q *Queries) RemoveBookGenre(ctx context.Context, arg RemoveBookGenreParams) error {
+	_, err := q.db.ExecContext(ctx, removeBookGenre, arg.BookID, arg.GenreID)
+	return err
+}

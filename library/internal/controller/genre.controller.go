@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"library/internal/dto/request"
+	"library/internal/dto/req"
 	"library/internal/service"
 	"library/pkg/response"
 	"strconv"
@@ -19,7 +19,7 @@ func NewGenreController(genreService service.IGenreService) *GenreController {
 	}
 }
 func (gc *GenreController) CreateGenre(ctx *gin.Context) {
-	var genre request.GenrePostDto
+	var genre req.GenrePostDto
 	if err := ctx.ShouldBindJSON(&genre); err != nil {
 		response.Response(ctx, response.CodeInvalidRequestBody, nil)
 		return

@@ -3,7 +3,7 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"library/internal/dto/request"
+	"library/internal/dto/req"
 	"library/internal/service"
 	"library/pkg/response"
 	"strconv"
@@ -20,7 +20,7 @@ func NewAuthorController(authorService service.IAuthorService) *AuthorController
 }
 
 func (ac *AuthorController) CreateAuthor(ctx *gin.Context) {
-	var author request.AuthorPostDto
+	var author req.AuthorPostDto
 	if err := ctx.ShouldBindJSON(&author); err != nil {
 		response.Response(ctx, response.CodeInvalidRequestBody, nil)
 		return

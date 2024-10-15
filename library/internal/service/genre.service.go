@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"library/global"
 	"library/internal/database"
-	"library/internal/dto/request"
+	"library/internal/dto/req"
 	"library/pkg/response"
 )
 
 type IGenreService interface {
 	GetGenreById(ctx context.Context, id int) (*database.Genre, int, error)
-	CreateGenre(ctx context.Context, data *request.GenrePostDto) (*database.Genre, int, error)
+	CreateGenre(ctx context.Context, data *req.GenrePostDto) (*database.Genre, int, error)
 }
 
 type genreService struct {
@@ -26,7 +26,7 @@ func NewGenreService() IGenreService {
 	}
 }
 
-func (gs *genreService) CreateGenre(ctx context.Context, data *request.GenrePostDto) (*database.Genre, int, error) {
+func (gs *genreService) CreateGenre(ctx context.Context, data *req.GenrePostDto) (*database.Genre, int, error) {
 	tx, _ := gs.db.BeginTx(ctx, nil)
 	q := gs.repository.WithTx(tx)
 	result, err := q.CreateGenre(ctx, data.Name)

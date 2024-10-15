@@ -21,4 +21,5 @@ OFFSET sqlc.arg(size) * (sqlc.arg(page)::INTEGER - 1);
 -- name: GetAuthorsByBookID :many
 SELECT a.*
 FROM "Author" as a INNER JOIN "Book_Author" as ba
-ON a.id = ba.author_id;
+ON a.id = ba.author_id
+WHERE ba.book_id = $1;

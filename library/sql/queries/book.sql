@@ -13,8 +13,12 @@ FROM "Book" as b
 WHERE id = $1;
 
 
--- name: GetPageBooks :many
+-- name: GetPageBookWithFilter :many
 SELECT b.*
 FROM "Book" as b
+INNER JOIN "Book_Genre" as bg
+ON b.id == bg.book_id
+INNER JOIN "Book_Author" as ba
+ON b.id == ba.book_id
 LIMIT sqlc.arg(size)
 OFFSET sqlc.arg(size) * (sqlc.arg(page)::INTEGER - 1);

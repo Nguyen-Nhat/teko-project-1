@@ -91,10 +91,11 @@ const getAuthorsByBookID = `-- name: GetAuthorsByBookID :many
 SELECT a.id, a.fullname, a.dob, a.created_at, a.updated_at
 FROM "Author" as a INNER JOIN "Book_Author" as ba
 ON a.id = ba.author_id
+WHERE ba.book_id = $1
 `
 
-func (q *Queries) GetAuthorsByBookID(ctx context.Context) ([]Author, error) {
-	rows, err := q.db.QueryContext(ctx, getAuthorsByBookID)
+func (q *Queries) GetAuthorsByBookID(ctx context.Context, bookID int32) ([]Author, error) {
+	rows, err := q.db.QueryContext(ctx, getAuthorsByBookID, bookID)
 	if err != nil {
 		return nil, err
 	}

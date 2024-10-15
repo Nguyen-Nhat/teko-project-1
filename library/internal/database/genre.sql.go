@@ -64,10 +64,11 @@ const getGenreByBookID = `-- name: GetGenreByBookID :many
 SELECT g.id, g.name, g.created_at, g.updated_at
 FROM "Genre" as g INNER JOIN "Book_Genre" as bg
 ON g.id = bg.genre_id
+WHERE bg.book_id = $1
 `
 
-func (q *Queries) GetGenreByBookID(ctx context.Context) ([]Genre, error) {
-	rows, err := q.db.QueryContext(ctx, getGenreByBookID)
+func (q *Queries) GetGenreByBookID(ctx context.Context, bookID int32) ([]Genre, error) {
+	rows, err := q.db.QueryContext(ctx, getGenreByBookID, bookID)
 	if err != nil {
 		return nil, err
 	}

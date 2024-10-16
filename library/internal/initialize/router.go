@@ -29,6 +29,7 @@ func InitRouter() *gin.Engine {
 		router.RouterGroupApp.InitBookRouter(MainGroup)
 		router.RouterGroupApp.InitAuthorRouter(MainGroup)
 		router.RouterGroupApp.InitGenreRouter(MainGroup)
+		router.RouterGroupApp.InitBorrowBookRouter(MainGroup)
 	}
 	return r
 }

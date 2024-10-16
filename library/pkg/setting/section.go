@@ -39,6 +39,6 @@ type DatabaseSetting struct {
 	DbName   string `mapstructure:"dbname"`
 }
 type PageableSetting struct {
-	DefaultPage int `mapstructure:"default_page"`
-	DefaultSize int `mapstructure:"default_size"`
+	DefaultPage int32 `mapstructure:"default_page"`
+	DefaultSize int32 `mapstructure:"default_size"`
 }

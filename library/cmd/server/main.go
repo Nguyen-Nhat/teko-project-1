@@ -1,8 +1,6 @@
 package main
 
-import (
-	"library/internal/initialize"
-)
+import "library/internal/initialize"
 
 // @title           API Documentation Library Service Backend
 // @version         1.0

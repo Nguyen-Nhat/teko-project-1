@@ -27,7 +27,10 @@ func NewGenreService() IGenreService {
 }
 
 func (gs *genreService) CreateGenre(ctx context.Context, data *req.GenrePostDto) (*database.Genre, int, error) {
-	tx, _ := gs.db.BeginTx(ctx, nil)
+	tx, err := gs.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, response.CodeInternalServerError, err
+	}
 	q := gs.repository.WithTx(tx)
 	result, err := q.CreateGenre(ctx, data.Name)
 	if err != nil {

@@ -27,6 +27,14 @@ func InitBookRouterHandler() *controller.BookController {
 	return bookController
 }
 
+// Injectors from borrow_book.wire.go:
+
+func InitBorrowBookRouterHandler() *controller.BorrowBookController {
+	iBorrowBookService := service.NewBorrowBookService()
+	borrowBookController := controller.NewBorrowBookController(iBorrowBookService)
+	return borrowBookController
+}
+
 // Injectors from genre.wire.go:
 
 func InitGenreRouterHandler() *controller.GenreController {

@@ -19,25 +19,25 @@ func (b *BookDto) FromModel(book database.Book) {
 }
 
 type BookDetailDto struct {
-	*BookDto
-	Authors []*AuthorDto `json:"authors"`
-	Genres  []*GenreDto  `json:"genres"`
+	BookDto
+	Authors []AuthorDto `json:"authors"`
+	Genres  []GenreDto  `json:"genres"`
 }
 
 func (b *BookDetailDto) FromModel(book database.Book, authors []database.Author, genres []database.Genre) {
-	b.BookDto = &BookDto{}
+	b.BookDto = BookDto{}
 	b.BookDto.FromModel(book)
-	authorList := make([]*AuthorDto, len(authors))
+	authorList := make([]AuthorDto, len(authors))
 	for i, author := range authors {
-		temp := &AuthorDto{}
+		temp := AuthorDto{}
 		temp.FromModel(&author)
 		authorList[i] = temp
 	}
 	b.Authors = authorList
 
-	genreList := make([]*GenreDto, len(genres))
+	genreList := make([]GenreDto, len(genres))
 	for i, genre := range genres {
-		temp := &GenreDto{}
+		temp := GenreDto{}
 		temp.FromModel(&genre)
 		genreList[i] = temp
 	}

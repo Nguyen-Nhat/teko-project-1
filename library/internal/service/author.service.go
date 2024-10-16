@@ -27,7 +27,10 @@ func NewAuthorService() IAuthorService {
 }
 
 func (as *authorService) CreateAuthor(ctx context.Context, data *req.AuthorPostDto) (*database.Author, int, error) {
-	tx, _ := as.db.BeginTx(ctx, nil)
+	tx, err := as.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, response.CodeInternalServerError, err
+	}
 	q := as.repository.WithTx(tx)
 
 	dob := sql.NullTime{}

@@ -3,8 +3,8 @@ package req
 import "library/global"
 
 type PageInfo struct {
-	Page int `json:"page" form:"page" binding:"min=0"`
-	Size int `json:"size" form:"size" binding:"min=1"`
+	Page int32 `json:"page" form:"page" binding:"min=1"`
+	Size int32 `json:"size" form:"size" binding:"min=1"`
 }
 
 func (p *PageInfo) SetDefaultPageInfo() {

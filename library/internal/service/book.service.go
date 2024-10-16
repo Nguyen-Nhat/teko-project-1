@@ -3,16 +3,19 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"github.com/jinzhu/copier"
 	"library/global"
 	"library/internal/database"
 	"library/internal/dto/req"
 	"library/internal/dto/res"
+	"library/internal/util"
 	"library/pkg/response"
 )
 
 type IBookService interface {
 	GetBookDetailById(ctx context.Context, bookId int) (*res.BookDetailDto, int, error)
-	GetPageBookWithFilter(ctx context.Context, data *req.BookPageDto) (interface{}, int, error)
+	GetPageBookWithFilter(ctx context.Context, data *req.BookPageDto) (*res.PageResult, int, error)
 	CreateBook(ctx context.Context, data *req.BookPostDto) (*database.Book, int, error)
 	AddGenreToBook(ctx context.Context, bookId int, genreId int) (*database.BookGenre, int, error)
 	AddAuthorToBook(ctx context.Context, bookId int, authorId int) (*database.BookAuthor, int, error)
@@ -31,8 +34,40 @@ func NewBookService() IBookService {
 		repository: database.New(global.Db),
 	}
 }
-func (bs *bookService) GetPageBookWithFilter(ctx context.Context, data *req.BookPageDto) (interface{}, int, error) {
-	return nil, response.CodeSuccess, nil
+func (bs *bookService) GetPageBookWithFilter(ctx context.Context, data *req.BookPageDto) (*res.PageResult, int, error) {
+	params := database.GetPageBookWithFilterParams{
+		Title:    util.ToNullString(data.Title),
+		Genreid:  util.ToNullInt32(data.GenreId),
+		Authorid: util.ToNullInt32(data.AuthorId),
+		Page:     data.Page,
+		Size:     data.Size,
+	}
+	books, err := bs.repository.GetPageBookWithFilter(ctx, params)
+	if err != nil {
+		fmt.Println(err)
+		return nil, response.CodeInternalServerError, err
+	}
+	totalPage := 0
+	if len(books) > 0 {
+		totalPage = int(books[0].TotalPage)
+	}
+
+	list := make([]res.BookDto, len(books))
+	for i, book := range books {
+		var b database.Book
+		_ = copier.Copy(&b, &book)
+		temp := res.BookDto{}
+		temp.FromModel(b)
+		list[i] = temp
+	}
+	result := res.PageResult{
+		List:      list,
+		Size:      len(list),
+		Page:      int(data.Page),
+		TotalPage: totalPage,
+	}
+
+	return &result, response.CodeSuccess, nil
 }
 func (bs *bookService) GetBookDetailById(ctx context.Context, bookId int) (*res.BookDetailDto, int, error) {
 	book, err := bs.repository.GetBookByID(ctx, int32(bookId))

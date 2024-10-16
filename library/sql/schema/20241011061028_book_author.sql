@@ -2,8 +2,8 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS "Book_Author" (
     "id" serial PRIMARY KEY,
-    "book_id" integer NOT NULL,
-    "author_id" integer NOT NULL
+    "book_id" serial NOT NULL,
+    "author_id" serial NOT NULL
 );
 ALTER TABLE "Book_Author"
 ADD CONSTRAINT "UQ_BookId_AuthorId" UNIQUE(book_id, author_id);

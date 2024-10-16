@@ -2,8 +2,8 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS "Borrow_Book_Detail" (
     "id" serial PRIMARY KEY,
-    "borrow_book_id" integer NOT NULL,
-    "book_id" integer NOT NULL,
+    "borrow_book_id" serial NOT NULL,
+    "book_id" serial NOT NULL,
     "quantity" integer NOT NULL DEFAULT 1
 );
 ALTER TABLE "Borrow_Book_Detail"

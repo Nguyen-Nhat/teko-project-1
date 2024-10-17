@@ -71,7 +71,7 @@ func (bc *BookController) RemoveGenreFromBook(ctx *gin.Context) {
 		response.Response(ctx, response.CodeInvalidPathVariable, nil)
 		return
 	}
-	code, _ := bc.bookService.RemoveAuthorFromBook(ctx, bookId, genreId)
+	_, code, _ := bc.bookService.RemoveAuthorFromBook(ctx, bookId, genreId)
 	response.Response(ctx, code, nil)
 }
 func (bc *BookController) RemoveAuthorFromBook(ctx *gin.Context) {
@@ -84,7 +84,7 @@ func (bc *BookController) RemoveAuthorFromBook(ctx *gin.Context) {
 		response.Response(ctx, response.CodeInvalidPathVariable, nil)
 		return
 	}
-	code, _ := bc.bookService.RemoveAuthorFromBook(ctx, bookId, authorId)
+	_, code, _ := bc.bookService.RemoveAuthorFromBook(ctx, bookId, authorId)
 	response.Response(ctx, code, nil)
 }
 func (bc *BookController) GetBookDetailById(ctx *gin.Context) {

@@ -3,15 +3,16 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"library/global"
 	"library/internal/database"
 	"library/internal/dto/req"
+	"library/internal/dto/res"
 	"library/pkg/response"
-	"time"
 )
 
 type IBorrowBookService interface {
-	CreateBorrowBook(ctx context.Context, data *req.BorrowBookPostDto) (interface{}, int, error)
+	CreateBorrowBook(ctx context.Context, data *req.BorrowBookPostDto) (*res.BorrowBookDetailDto, int, error)
 	ReturnBorrowBook(ctx context.Context, id int) (interface{}, int, error)
 }
 
@@ -27,42 +28,77 @@ func NewBorrowBookService() IBorrowBookService {
 	}
 }
 
-func (bbs *borrowBookService) CreateBorrowBook(ctx context.Context, data *req.BorrowBookPostDto) (interface{}, int, error) {
-	if data.ReturnDate.Before(time.Now()) {
-		return nil, response.CodeInvalidReturnBookDate, nil
-	}
-	return nil, response.CodeSuccess, nil
+func (bbs *borrowBookService) CreateBorrowBook(ctx context.Context, data *req.BorrowBookPostDto) (*res.BorrowBookDetailDto, int, error) {
+	return withTransaction(ctx, bbs.db, bbs.repository, func(q *database.Queries) (*res.BorrowBookDetailDto, int, error) {
+		params := database.CreateBorrowBookParams{
+			StudentID: data.StudentId,
+			DueDate:   data.DueDate,
+		}
+		borrowBook, err := q.CreateBorrowBook(ctx, params)
+		if err != nil {
+			return nil, response.CodeCannotCreateBorrowBook, err
+		}
+
+		bookIds := make([]int32, len(data.BorrowBookDetails))
+		quantities := make([]int32, len(data.BorrowBookDetails))
+
+		for i, borrowBookDetail := range data.BorrowBookDetails {
+			bookIds[i] = borrowBookDetail.BookId
+			quantities[i] = borrowBookDetail.Quantity
+			params := database.UpdateBookQuantityWithBorrowBookParams{
+				ID:       borrowBookDetail.BookId,
+				Quantity: borrowBookDetail.Quantity,
+			}
+			rowAffected, err := q.UpdateBookQuantityWithBorrowBook(ctx, params)
+			if err != nil {
+				return nil, response.CodeInternalServerError, err
+			}
+			if rowAffected == 0 {
+				return nil, response.CodeCannotCreateBorrowBook, fmt.Errorf("")
+			}
+		}
+
+		detail, err := q.InsertBorrowBookDetails(ctx, database.InsertBorrowBookDetailsParams{
+			BorrowBookID: borrowBook.ID,
+			BookIds:      bookIds,
+			Quantities:   quantities,
+		})
+
+		if err != nil {
+			return nil, response.CodeCannotCreateBorrowBook, err
+		}
+
+		result := res.BorrowBookDetailDto{}
+		result.FromModel(borrowBook, detail)
+		return &result, response.CodeSuccess, nil
+	})
 }
 func (bbs *borrowBookService) ReturnBorrowBook(ctx context.Context, id int) (interface{}, int, error) {
-	tx, err := bbs.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, response.CodeInternalServerError, err
-	}
-	q := bbs.repository.WithTx(tx)
-
-	borrowBookDetails, err := q.GetBorrowBookDetailByBorrowId(ctx, int32(id))
-	if err != nil {
-		_ = tx.Rollback()
-		return nil, response.CodeBorrowBookNotFound, err
-	}
-
-	for _, borrowBookDetail := range borrowBookDetails {
-		params := database.UpdateBookQuantityWithReturnBookParams{
-			ID:       borrowBookDetail.BookID,
-			Quantity: borrowBookDetail.Quantity,
+	return withTransaction(ctx, bbs.db, bbs.repository, func(q *database.Queries) (interface{}, int, error) {
+		rowAffected, err := q.ReturnBorrowBook(ctx, int32(id))
+		if err != nil || rowAffected == 0 {
+			return nil, response.CodeCannotReturnBorrowBook, fmt.Errorf("")
 		}
-		if err := q.UpdateBookQuantityWithReturnBook(ctx, params); err != nil {
-			_ = tx.Rollback()
-			return nil, response.CodeCannotReturnBorrowBook, err
+		borrowBookDetails, err := q.GetBorrowBookDetailByBorrowId(ctx, int32(id))
+
+		if err != nil || borrowBookDetails == nil {
+			return nil, response.CodeCannotReturnBorrowBook, fmt.Errorf("")
 		}
-	}
 
-	err = q.ReturnBorrowBook(ctx, int32(id))
-	if err != nil {
-		_ = tx.Rollback()
-		return nil, response.CodeCannotReturnBorrowBook, err
-	}
+		for _, borrowBookDetail := range borrowBookDetails {
+			params := database.UpdateBookQuantityWithReturnBookParams{
+				ID:       borrowBookDetail.BookID,
+				Quantity: borrowBookDetail.Quantity,
+			}
+			rowAffected, err := q.UpdateBookQuantityWithReturnBook(ctx, params)
+			if err != nil {
+				return nil, response.CodeInternalServerError, err
+			}
+			if rowAffected == 0 {
+				return nil, response.CodeCannotReturnBorrowBook, fmt.Errorf("")
+			}
 
-	_ = tx.Commit()
-	return nil, response.CodeSuccess, nil
+		}
+		return nil, response.CodeSuccess, nil
+	})
 }

@@ -27,18 +27,13 @@ func NewGenreService() IGenreService {
 }
 
 func (gs *genreService) CreateGenre(ctx context.Context, data *req.GenrePostDto) (*database.Genre, int, error) {
-	tx, err := gs.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, response.CodeInternalServerError, err
-	}
-	q := gs.repository.WithTx(tx)
-	result, err := q.CreateGenre(ctx, data.Name)
-	if err != nil {
-		_ = tx.Rollback()
-		return nil, response.CodeCannotCreateGenre, err
-	}
-	_ = tx.Commit()
-	return &result, response.CodeCreated, nil
+	return withTransaction(ctx, gs.db, gs.repository, func(q *database.Queries) (*database.Genre, int, error) {
+		result, err := q.CreateGenre(ctx, data.Name)
+		if err != nil {
+			return nil, response.CodeCannotCreateGenre, err
+		}
+		return &result, response.CodeSuccess, nil
+	})
 }
 
 func (gs *genreService) GetGenreById(ctx context.Context, id int) (*database.Genre, int, error) {

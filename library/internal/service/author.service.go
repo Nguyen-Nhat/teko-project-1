@@ -27,26 +27,23 @@ func NewAuthorService() IAuthorService {
 }
 
 func (as *authorService) CreateAuthor(ctx context.Context, data *req.AuthorPostDto) (*database.Author, int, error) {
-	tx, err := as.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, response.CodeInternalServerError, err
-	}
-	q := as.repository.WithTx(tx)
+	return withTransaction(ctx, as.db, as.repository, func(q *database.Queries) (*database.Author, int, error) {
+		dob := sql.NullTime{}
+		err := dob.Scan(data.Dob)
+		if err != nil {
+			return nil, response.CodeInternalServerError, err
+		}
 
-	dob := sql.NullTime{}
-	_ = dob.Scan(data.Dob)
-
-	params := database.CreateAuthorParams{
-		Fullname: data.FullName,
-		Dob:      dob,
-	}
-	result, err := q.CreateAuthor(ctx, params)
-	if err != nil {
-		_ = tx.Rollback()
-		return nil, response.CodeCannotCreateAuthor, err
-	}
-	_ = tx.Commit()
-	return &result, response.CodeCreated, nil
+		params := database.CreateAuthorParams{
+			Fullname: data.FullName,
+			Dob:      dob,
+		}
+		result, err := q.CreateAuthor(ctx, params)
+		if err != nil {
+			return nil, response.CodeCannotCreateAuthor, err
+		}
+		return &result, response.CodeCreated, nil
+	})
 }
 func (as *authorService) GetAuthorById(ctx context.Context, id int) (*database.Author, int, error) {
 	result, err := as.repository.GetAuthorByID(ctx, int32(id))

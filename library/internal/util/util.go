@@ -16,6 +16,12 @@ func ToNullTime(t *time.Time) sql.NullTime {
 		Valid: true,
 	}
 }
+func FromNullTime(t sql.NullTime) *time.Time {
+	if !t.Valid {
+		return nil
+	}
+	return &t.Time
+}
 func ToNullString(s *string) sql.NullString {
 	if s == nil {
 		return sql.NullString{

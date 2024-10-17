@@ -11,7 +11,7 @@ type AuthorDto struct {
 	Dob      *time.Time `json:"dob"`
 }
 
-func (a *AuthorDto) FromModel(author *database.Author) {
+func (a *AuthorDto) FromModel(author database.Author) {
 	a.ID = author.ID
 	a.FullName = author.Fullname
 	// chưa rõ tại sao gọi hàm Value() của sql.Nulltime mà lại chạy Scan() ???

@@ -4,7 +4,7 @@ import "time"
 
 type BorrowBookPostDto struct {
 	StudentId         string                    `json:"student_id" binding:"required,min=1"`
-	ReturnDate        time.Time                 `json:"return_date" binding:"required"`
+	DueDate           time.Time                 `json:"due_date" binding:"required"`
 	BorrowBookDetails []BorrowBookDetailPostDto `json:"borrow_book_details" binding:"required"`
 }
 type BorrowBookDetailPostDto struct {

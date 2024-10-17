@@ -28,8 +28,15 @@ GROUP BY b.id
 LIMIT sqlc.arg(size)
 OFFSET sqlc.arg(size) * (sqlc.arg(page)::int - 1);
 
--- name: UpdateBookQuantityWithReturnBook :exec
+-- name: UpdateBookQuantityWithReturnBook :execrows
 UPDATE "Book"
 SET available_quantity = available_quantity + sqlc.arg(quantity)::int,
     borrow_quantity = borrow_quantity - sqlc.arg(quantity)::int
 WHERE id = $1;
+
+-- name: UpdateBookQuantityWithBorrowBook :execrows
+UPDATE "Book"
+SET available_quantity = available_quantity - sqlc.arg(quantity)::int,
+    borrow_quantity = borrow_quantity + sqlc.arg(quantity)::int
+WHERE id = sqlc.arg(id)::int
+AND available_quantity >= sqlc.arg(quantity)::int;

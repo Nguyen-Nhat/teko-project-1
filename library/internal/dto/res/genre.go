@@ -7,7 +7,7 @@ type GenreDto struct {
 	Name string `json:"name"`
 }
 
-func (g *GenreDto) FromModel(genre *database.Genre) {
+func (g *GenreDto) FromModel(genre database.Genre) {
 	g.Id = genre.ID
 	g.Name = genre.Name
 }

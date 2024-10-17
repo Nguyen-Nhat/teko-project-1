@@ -25,21 +25,14 @@ type BookDetailDto struct {
 }
 
 func (b *BookDetailDto) FromModel(book database.Book, authors []database.Author, genres []database.Genre) {
-	b.BookDto = BookDto{}
 	b.BookDto.FromModel(book)
-	authorList := make([]AuthorDto, len(authors))
+	b.Authors = make([]AuthorDto, len(authors))
 	for i, author := range authors {
-		temp := AuthorDto{}
-		temp.FromModel(&author)
-		authorList[i] = temp
+		b.Authors[i].FromModel(author)
 	}
-	b.Authors = authorList
 
-	genreList := make([]GenreDto, len(genres))
+	b.Genres = make([]GenreDto, len(genres))
 	for i, genre := range genres {
-		temp := GenreDto{}
-		temp.FromModel(&genre)
-		genreList[i] = temp
+		b.Genres[i].FromModel(genre)
 	}
-	b.Genres = genreList
 }

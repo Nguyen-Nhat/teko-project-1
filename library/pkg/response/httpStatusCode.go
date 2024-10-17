@@ -11,14 +11,15 @@ const (
 	CodeCannotCreateBook           = 400004
 	CodeCannotCreateAuthor         = 400005
 	CodeCannotCreateGenre          = 400006
-	CodeBookGenreExists            = 400007
-	CodeBookAuthorExists           = 400008
-	CodeCannotInsertGenreToBook    = 400009
-	CodeCannotInsertAuthorToBook   = 400010
-	CodeCannotRemoveGenreFromBook  = 400011
-	CodeCannotRemoveAuthorFromBook = 400012
-	CodeInvalidReturnBookDate      = 400013
-	CodeCannotReturnBorrowBook     = 400014
+	CodeCannotCreateBorrowBook     = 400007
+	CodeBookGenreExists            = 400008
+	CodeBookAuthorExists           = 400009
+	CodeCannotInsertGenreToBook    = 400010
+	CodeCannotInsertAuthorToBook   = 400011
+	CodeCannotRemoveGenreFromBook  = 400012
+	CodeCannotRemoveAuthorFromBook = 400013
+	CodeInvalidReturnBookDate      = 400014
+	CodeCannotReturnBorrowBook     = 400015
 	CodeBookNotFound               = 404001
 	CodeAuthorNotFound             = 404002
 	CodeGenreNotFound              = 404003
@@ -40,6 +41,7 @@ var msg = map[int]responseMapping{
 	CodeCannotCreateBook:           {HttpCode: http.StatusBadRequest, Message: "Cannot create book"},
 	CodeCannotCreateAuthor:         {HttpCode: http.StatusBadRequest, Message: "Cannot create author"},
 	CodeCannotCreateGenre:          {HttpCode: http.StatusBadRequest, Message: "Cannot create genre"},
+	CodeCannotCreateBorrowBook:     {HttpCode: http.StatusBadRequest, Message: "Cannot create borrow book"},
 	CodeBookGenreExists:            {HttpCode: http.StatusBadRequest, Message: "The book has this genre"},
 	CodeBookAuthorExists:           {HttpCode: http.StatusBadRequest, Message: "The book has this author"},
 	CodeCannotInsertGenreToBook:    {HttpCode: http.StatusBadRequest, Message: "Cannot insert genre to book"},

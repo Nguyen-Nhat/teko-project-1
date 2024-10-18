@@ -1,8 +1,12 @@
 package service
 
-import "student/internal/repository"
+import (
+	"context"
+	"student/internal/repository"
+)
 
 type IUniversityService interface {
+	CreateUniversity(ctx context.Context) (interface{}, int, error)
 }
 
 type universityService struct {

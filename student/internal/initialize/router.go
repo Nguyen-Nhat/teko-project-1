@@ -7,6 +7,7 @@ import (
 	_ "student/docs"
 	"student/global"
 	"student/internal/middleware"
+	"student/internal/router"
 )
 
 func InitRouter() *gin.Engine {
@@ -23,5 +24,10 @@ func InitRouter() *gin.Engine {
 	r.Use(middleware.LimitRequestBody())
 	r.Use(middleware.CorsMiddleware())
 
+	MainGroup := r.Group("/api/v1")
+	{
+		router.RouterGroupApp.InitStudentRouter(MainGroup)
+		router.RouterGroupApp.InitUniversityRouter(MainGroup)
+	}
 	return r
 }

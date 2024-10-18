@@ -11,7 +11,8 @@ func (ur *StudentRouter) InitStudentRouter(Router *gin.RouterGroup) {
 	//studentController := wire.InitStudentRouterHandler()
 	studentRouter := Router.Group("/book")
 	{
-		studentRouter.GET("/test1")
-		studentRouter.POST("/test2")
+		studentRouter.GET("")
+		studentRouter.GET("/:student_id")
+		studentRouter.POST("")
 	}
 }

@@ -7,9 +7,10 @@ type Config struct {
 	Database DatabaseSetting `mapstructure:"database"`
 }
 type ServerSetting struct {
-	Port           int    `mapstructure:"port"`
-	Mode           string `mapstructure:"mode"`
-	MaxRequestBody int64  `mapstructure:"max_request_body"`
+	Port           int             `mapstructure:"port"`
+	Mode           string          `mapstructure:"mode"`
+	MaxRequestBody int64           `mapstructure:"max_request_body"`
+	Pageable       PageableSetting `mapstructure:"pageable"`
 }
 type LoggingSetting struct {
 	LogLevel    string `mapstructure:"log_level"`
@@ -38,4 +39,8 @@ type DatabaseSetting struct {
 	DbName      string `mapstructure:"dbname"`
 	MaxIdleConn int    `mapstructure:"max_idle_conn"`
 	MaxOpenConn int    `mapstructure:"max_open_conn"`
+}
+type PageableSetting struct {
+	DefaultPage int32 `mapstructure:"default_page"`
+	DefaultSize int32 `mapstructure:"default_size"`
 }

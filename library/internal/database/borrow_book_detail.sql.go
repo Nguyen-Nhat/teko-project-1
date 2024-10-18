@@ -7,6 +7,8 @@ package database
 
 import (
 	"context"
+	"database/sql"
+	"time"
 
 	"github.com/lib/pq"
 )
@@ -31,6 +33,76 @@ func (q *Queries) GetBorrowBookDetailByBorrowId(ctx context.Context, borrowBookI
 			&i.BorrowBookID,
 			&i.BookID,
 			&i.Quantity,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getBorrowBookDetails = `-- name: GetBorrowBookDetails :many
+SELECT bbd.id, bbd.borrow_book_id, bbd.book_id, bbd.quantity, b.title, bb.student_id, bb.borrow_date , bb.due_date, CEIL(COUNT(*) OVER() / (1.0 * $1)) AS total_page
+FROM "Borrow_Book" bb INNER JOIN "Borrow_Book_Detail" bbd ON bb.id = bbd.borrow_book_id
+INNER JOIN "Book" b ON bbd.book_id = b.id
+WHERE bb.is_return = false
+AND bb.student_id = $2
+AND (EXTRACT(DAY FROM AGE(bb.due_date, NOW())) >= 0
+         AND EXTRACT(DAY FROM AGE(bb.due_date, NOW())) <= $3::int
+         OR $3::int IS NULL)
+LIMIT $1
+OFFSET $1 * ($4::int - 1)
+`
+
+type GetBorrowBookDetailsParams struct {
+	Size      int32
+	StudentID sql.NullString
+	DayRange  sql.NullInt32
+	Page      int32
+}
+
+type GetBorrowBookDetailsRow struct {
+	ID           int32
+	BorrowBookID int32
+	BookID       int32
+	Quantity     int32
+	Title        string
+	StudentID    string
+	BorrowDate   time.Time
+	DueDate      time.Time
+	TotalPage    float64
+}
+
+func (q *Queries) GetBorrowBookDetails(ctx context.Context, arg GetBorrowBookDetailsParams) ([]GetBorrowBookDetailsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBorrowBookDetails,
+		arg.Size,
+		arg.StudentID,
+		arg.DayRange,
+		arg.Page,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetBorrowBookDetailsRow
+	for rows.Next() {
+		var i GetBorrowBookDetailsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.BorrowBookID,
+			&i.BookID,
+			&i.Quantity,
+			&i.Title,
+			&i.StudentID,
+			&i.BorrowDate,
+			&i.DueDate,
+			&i.TotalPage,
 		); err != nil {
 			return nil, err
 		}

@@ -97,7 +97,7 @@ func (bs *bookService) CreateBook(ctx context.Context, data *req.BookPostDto) (*
 		}
 		result, err := q.CreateBook(ctx, params)
 		if err != nil {
-			return nil, response.CodeBookNotFound, err
+			return nil, response.CodeCannotCreateBook, err
 		}
 		return &result, response.CodeSuccess, nil
 	})

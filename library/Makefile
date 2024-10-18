@@ -22,4 +22,6 @@ sqlgen:
 	sqlc generate
 swag:
 	swag init -g ./cmd/server/main.go -o ./docs
-.PHONY: run goose_create goose_up goose_down goose_reset sqlgen swag wire
+mockery:
+	mockery --dir=internal/service --output=mocks --all
+.PHONY: run goose_create goose_up goose_down goose_reset sqlgen swag wire mockery

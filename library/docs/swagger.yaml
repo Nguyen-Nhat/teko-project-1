@@ -1,4 +1,25 @@
 basePath: /api/v1
+definitions:
+  req.BookPostDto:
+    properties:
+      published_year:
+        minimum: 0
+        type: integer
+      title:
+        minLength: 1
+        type: string
+    required:
+    - published_year
+    - title
+    type: object
+  response.Data:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -12,5 +33,31 @@ info:
   termsOfService: https://github.com/Nguyen-Nhat/teko-project-1
   title: API Documentation Library Service Backend
   version: "1.0"
-paths: {}
+paths:
+  /book:
+    post:
+      consumes:
+      - application/json
+      description: Create book
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/req.BookPostDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Create book
+      tags:
+      - book
 swagger: "2.0"

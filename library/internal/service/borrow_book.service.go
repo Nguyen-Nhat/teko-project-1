@@ -8,10 +8,12 @@ import (
 	"library/internal/database"
 	"library/internal/dto/req"
 	"library/internal/dto/res"
+	"library/internal/util"
 	"library/pkg/response"
 )
 
 type IBorrowBookService interface {
+	GetBorrowBookDetails(ctx context.Context, data *req.BorrowBookDetailPageDto) (*res.PageResult, int, error)
 	CreateBorrowBook(ctx context.Context, data *req.BorrowBookPostDto) (*res.BorrowBookDetailDto, int, error)
 	ReturnBorrowBook(ctx context.Context, id int) (interface{}, int, error)
 }
@@ -26,6 +28,46 @@ func NewBorrowBookService() IBorrowBookService {
 		db:         global.Db,
 		repository: database.New(global.Db),
 	}
+}
+
+func (bbs *borrowBookService) GetBorrowBookDetails(ctx context.Context, data *req.BorrowBookDetailPageDto) (*res.PageResult, int, error) {
+	params := database.GetBorrowBookDetailsParams{
+		Page:      data.Page,
+		Size:      data.Size,
+		StudentID: util.ToNullString(data.StudentID),
+		DayRange:  util.ToNullInt32(data.DayRange),
+	}
+	borrowRows, err := bbs.repository.GetBorrowBookDetails(ctx, params)
+	if err != nil {
+		return nil, response.CodeInternalServerError, err
+	}
+	totalPage := 0
+	if len(borrowRows) > 0 {
+		totalPage = int(borrowRows[0].TotalPage)
+	}
+	resultData := make([]res.BorrowItemWithBookInfoDto, len(borrowRows))
+	for i, row := range borrowRows {
+		resultData[i] = res.BorrowItemWithBookInfoDto{
+			BorrowBookItemDto: res.BorrowBookItemDto{
+				Id:           row.ID,
+				BookID:       row.BookID,
+				Quantity:     row.Quantity,
+				BorrowBookID: row.BorrowBookID,
+			},
+			Title:      row.Title,
+			StudentId:  row.StudentID,
+			BorrowDate: row.BorrowDate,
+			DueDate:    row.DueDate,
+		}
+	}
+	result := res.PageResult{
+		TotalPage: totalPage,
+		Page:      int(data.Page),
+		Size:      len(resultData),
+		List:      resultData,
+	}
+
+	return &result, response.CodeSuccess, nil
 }
 
 func (bbs *borrowBookService) CreateBorrowBook(ctx context.Context, data *req.BorrowBookPostDto) (*res.BorrowBookDetailDto, int, error) {

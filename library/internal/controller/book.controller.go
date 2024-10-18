@@ -19,6 +19,16 @@ func NewBookController(bookService service.IBookService) *BookController {
 	}
 }
 
+// Create Book documentation
+// @Summary      Create book
+// @Description  Create book
+// @Tags         book
+// @Accept       json
+// @Produce      json
+// @Param        payload body req.BookPostDto true "payload"
+// @Success      200  {object}  response.Data
+// @Failure      400  {object}  response.Data
+// @Router       /book [post]
 func (bc *BookController) CreateBook(ctx *gin.Context) {
 	var book req.BookPostDto
 	if err := ctx.ShouldBindJSON(&book); err != nil {

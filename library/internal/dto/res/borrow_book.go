@@ -31,6 +31,14 @@ type BorrowBookItemDto struct {
 	Quantity     int32 `json:"quantity"`
 }
 
+type BorrowItemWithBookInfoDto struct {
+	BorrowBookItemDto
+	Title      string    `json:"title"`
+	StudentId  string    `json:"student_id"`
+	BorrowDate time.Time `json:"borrow_date"`
+	DueDate    time.Time `json:"due_date"`
+}
+
 func (b *BorrowBookItemDto) FromModel(detail database.BorrowBookDetail) {
 	b.Id = detail.ID
 	b.BookID = detail.BookID

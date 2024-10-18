@@ -17,7 +17,15 @@ func NewBorrowBookController(borrowBookService service.IBorrowBookService) *Borr
 		borrowBookService: borrowBookService,
 	}
 }
-
+func (bbc *BorrowBookController) GetBorrowBookDetails(ctx *gin.Context) {
+	var query req.BorrowBookDetailPageDto
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		response.Response(ctx, response.CodeInvalidRequestBody, nil)
+		return
+	}
+	result, code, _ := bbc.borrowBookService.GetBorrowBookDetails(ctx, &query)
+	response.Response(ctx, code, result)
+}
 func (bbc *BorrowBookController) CreateBorrowBook(ctx *gin.Context) {
 	var borrowBook req.BorrowBookPostDto
 	if err := ctx.ShouldBindJSON(&borrowBook); err != nil {

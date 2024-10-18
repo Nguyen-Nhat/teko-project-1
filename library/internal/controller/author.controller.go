@@ -19,6 +19,17 @@ func NewAuthorController(authorService service.IAuthorService) *AuthorController
 	}
 }
 
+// Create Author documentation
+// @Summary      Create author
+// @Description  Create author
+// @Tags         author
+// @Accept       json
+// @Produce      json
+// @Param        payload body req.AuthorPostDto true "payload"
+// @Success      201  {object}  response.Data
+// @Failure      400  {object}  response.Data
+// @Failure      500  {object}  response.Data
+// @Router       /author [post]
 func (ac *AuthorController) CreateAuthor(ctx *gin.Context) {
 	var author req.AuthorPostDto
 	if err := ctx.ShouldBindJSON(&author); err != nil {
@@ -35,6 +46,18 @@ func (ac *AuthorController) CreateAuthor(ctx *gin.Context) {
 	ctx.Header("Location", locationUrl)
 	response.Response(ctx, code, result)
 }
+
+// Get Author By Id documentation
+// @Summary      Get Author By Id
+// @Description  Get Author By Id
+// @Tags         author
+// @Accept       json
+// @Produce      json
+// @Param        author_id   path      int  true  "Author Id"
+// @Success      200  {object}  response.Data
+// @Failure      400  {object}  response.Data
+// @Failure      404  {object}  response.Data
+// @Router       /author/{author_id} [get]
 func (ac *AuthorController) GetAuthorById(ctx *gin.Context) {
 	authorIdStr := ctx.Param("author_id")
 	authorId, err := strconv.Atoi(authorIdStr)

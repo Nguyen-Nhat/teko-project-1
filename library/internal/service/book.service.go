@@ -16,7 +16,7 @@ import (
 type IBookService interface {
 	GetBookDetailById(ctx context.Context, bookId int) (*res.BookDetailDto, int, error)
 	GetPageBookWithFilter(ctx context.Context, data *req.BookPageDto) (*res.PageResult, int, error)
-	CreateBook(ctx context.Context, data *req.BookPostDto) (*database.Book, int, error)
+	CreateBook(ctx context.Context, data *req.BookPostDto) (*res.BookDto, int, error)
 	AddGenreToBook(ctx context.Context, bookId int, genreId int) (*database.BookGenre, int, error)
 	AddAuthorToBook(ctx context.Context, bookId int, authorId int) (*database.BookAuthor, int, error)
 	RemoveAuthorFromBook(ctx context.Context, bookId int, authorId int) (interface{}, int, error)
@@ -77,28 +77,30 @@ func (bs *bookService) GetBookDetailById(ctx context.Context, bookId int) (*res.
 
 	authors, err := bs.repository.GetAuthorsByBookID(ctx, int32(bookId))
 	if err != nil {
-		return nil, response.CodeInvalidPathVariable, err
+		return nil, response.CodeAuthorNotFoundByBookId, err
 	}
 
 	genres, err := bs.repository.GetGenreByBookID(ctx, int32(bookId))
 	if err != nil {
-		return nil, response.CodeInvalidPathVariable, err
+		return nil, response.CodeGenreNotFoundByBookId, err
 	}
 
 	result := &res.BookDetailDto{}
 	result.FromModel(book, authors, genres)
 	return result, response.CodeSuccess, nil
 }
-func (bs *bookService) CreateBook(ctx context.Context, data *req.BookPostDto) (*database.Book, int, error) {
-	return withTransaction(ctx, bs.db, bs.repository, func(q *database.Queries) (*database.Book, int, error) {
+func (bs *bookService) CreateBook(ctx context.Context, data *req.BookPostDto) (*res.BookDto, int, error) {
+	return withTransaction(ctx, bs.db, bs.repository, func(q *database.Queries) (*res.BookDto, int, error) {
 		params := database.CreateBookParams{
 			Title:         data.Title,
 			PublishedYear: data.PublishedYear,
 		}
-		result, err := q.CreateBook(ctx, params)
+		book, err := q.CreateBook(ctx, params)
 		if err != nil {
 			return nil, response.CodeCannotCreateBook, err
 		}
+		result := res.BookDto{}
+		result.FromModel(book)
 		return &result, response.CodeSuccess, nil
 	})
 }

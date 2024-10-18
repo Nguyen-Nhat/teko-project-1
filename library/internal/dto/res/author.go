@@ -2,6 +2,7 @@ package res
 
 import (
 	"library/internal/database"
+	"library/internal/util"
 	"time"
 )
 
@@ -14,10 +15,5 @@ type AuthorDto struct {
 func (a *AuthorDto) FromModel(author database.Author) {
 	a.ID = author.ID
 	a.FullName = author.Fullname
-	// chưa rõ tại sao gọi hàm Value() của sql.Nulltime mà lại chạy Scan() ???
-	if author.Dob.Valid {
-		a.Dob = &author.Dob.Time
-	} else {
-		a.Dob = nil
-	}
+	a.Dob = util.FromNullTime(author.Dob)
 }

@@ -112,7 +112,7 @@ func (bbs *borrowBookService) CreateBorrowBook(ctx context.Context, data *req.Bo
 
 		result := res.BorrowBookDetailDto{}
 		result.FromModel(borrowBook, detail)
-		return &result, response.CodeSuccess, nil
+		return &result, response.CodeCreated, nil
 	})
 }
 func (bbs *borrowBookService) ReturnBorrowBook(ctx context.Context, id int) (interface{}, int, error) {

@@ -24,6 +24,8 @@ const (
 	CodeAuthorNotFound             = 404002
 	CodeGenreNotFound              = 404003
 	CodeBorrowBookNotFound         = 404004
+	CodeGenreNotFoundByBookId      = 404005
+	CodeAuthorNotFoundByBookId     = 404006
 	CodeInternalServerError        = 500000
 )
 
@@ -54,5 +56,7 @@ var msg = map[int]responseMapping{
 	CodeGenreNotFound:              {HttpCode: http.StatusNotFound, Message: "Cannot find genre"},
 	CodeCannotReturnBorrowBook:     {HttpCode: http.StatusBadRequest, Message: "Cannot return borrow book"},
 	CodeBorrowBookNotFound:         {HttpCode: http.StatusNotFound, Message: "Cannot return borrow book"},
+	CodeGenreNotFoundByBookId:      {HttpCode: http.StatusNotFound, Message: "Cannot find genre by book id"},
+	CodeAuthorNotFoundByBookId:     {HttpCode: http.StatusNotFound, Message: "Cannot find author by book id"},
 	CodeInternalServerError:        {HttpCode: http.StatusInternalServerError, Message: "Internal Server Error"},
 }

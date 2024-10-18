@@ -1,5 +1,15 @@
 basePath: /api/v1
 definitions:
+  req.AuthorPostDto:
+    properties:
+      dob:
+        type: string
+      full_name:
+        minLength: 1
+        type: string
+    required:
+    - full_name
+    type: object
   req.BookPostDto:
     properties:
       published_year:
@@ -11,6 +21,40 @@ definitions:
     required:
     - published_year
     - title
+    type: object
+  req.BorrowBookDetailPostDto:
+    properties:
+      book_id:
+        type: integer
+      quantity:
+        type: integer
+    required:
+    - book_id
+    - quantity
+    type: object
+  req.BorrowBookPostDto:
+    properties:
+      borrow_book_details:
+        items:
+          $ref: '#/definitions/req.BorrowBookDetailPostDto'
+        type: array
+      due_date:
+        type: string
+      student_id:
+        minLength: 1
+        type: string
+    required:
+    - borrow_book_details
+    - due_date
+    - student_id
+    type: object
+  req.GenrePostDto:
+    properties:
+      name:
+        minLength: 1
+        type: string
+    required:
+    - name
     type: object
   response.Data:
     properties:
@@ -34,7 +78,106 @@ info:
   title: API Documentation Library Service Backend
   version: "1.0"
 paths:
+  /author:
+    post:
+      consumes:
+      - application/json
+      description: Create author
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/req.AuthorPostDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Create author
+      tags:
+      - author
+  /author/{author_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Author By Id
+      parameters:
+      - description: Author Id
+        in: path
+        name: author_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Get Author By Id
+      tags:
+      - author
   /book:
+    get:
+      consumes:
+      - application/json
+      description: Get Page Book With Filter
+      parameters:
+      - in: query
+        name: author_id
+        type: integer
+      - in: query
+        name: genre_id
+        type: integer
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        minimum: 1
+        name: size
+        type: integer
+      - in: query
+        name: title
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Get Page Book With Filter
+      tags:
+      - book
     post:
       consumes:
       - application/json
@@ -49,8 +192,8 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
             $ref: '#/definitions/response.Data'
         "400":
@@ -60,4 +203,322 @@ paths:
       summary: Create book
       tags:
       - book
+  /book/{book_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Book Detail By Id
+      parameters:
+      - description: Book Id
+        in: path
+        name: book_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Get Book Detail By Id
+      tags:
+      - book
+  /book/{book_id}/add-author/{author_id}:
+    put:
+      consumes:
+      - application/json
+      description: Add Author To Book
+      parameters:
+      - description: Book Id
+        in: path
+        name: book_id
+        required: true
+        type: integer
+      - description: Author Id
+        in: path
+        name: author_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Add Author To Book
+      tags:
+      - book
+  /book/{book_id}/add-genre/{genre_id}:
+    put:
+      consumes:
+      - application/json
+      description: Add Genre To Book
+      parameters:
+      - description: Book Id
+        in: path
+        name: book_id
+        required: true
+        type: integer
+      - description: Genre Id
+        in: path
+        name: genre_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Add Genre To Book
+      tags:
+      - book
+  /book/{book_id}/remove-author/{author_id}:
+    put:
+      consumes:
+      - application/json
+      description: Remove Author From Book
+      parameters:
+      - description: Book Id
+        in: path
+        name: book_id
+        required: true
+        type: integer
+      - description: Author Id
+        in: path
+        name: author_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Remove Author From Book
+      tags:
+      - book
+  /book/{book_id}/remove-genre/{genre_id}:
+    put:
+      consumes:
+      - application/json
+      description: Remove Genre From Book
+      parameters:
+      - description: Book Id
+        in: path
+        name: book_id
+        required: true
+        type: integer
+      - description: Genre Id
+        in: path
+        name: genre_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Remove Genre From Book
+      tags:
+      - book
+  /borrow-book:
+    post:
+      consumes:
+      - application/json
+      description: Create borrow book
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/req.BorrowBookPostDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Create borrow book
+      tags:
+      - borrow book
+  /borrow-book/detail-borrow-book:
+    get:
+      consumes:
+      - application/json
+      description: Get Borrow Book Details
+      parameters:
+      - in: query
+        name: day_range
+        type: integer
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        minimum: 1
+        name: size
+        type: integer
+      - in: query
+        minLength: 1
+        name: student_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Get Borrow Book Details
+      tags:
+      - borrow book
+  /borrow-book/return/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Return Borrow Book
+      parameters:
+      - description: Borrow Book Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Return Borrow Book
+      tags:
+      - borrow book
+  /genre:
+    post:
+      consumes:
+      - application/json
+      description: Create genre
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/req.GenrePostDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Create genre
+      tags:
+      - genre
+  /genre/{genre_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Genre By Id
+      parameters:
+      - description: Genre Id
+        in: path
+        name: genre_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Get Genre By Id
+      tags:
+      - genre
 swagger: "2.0"

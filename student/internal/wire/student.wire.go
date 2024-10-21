@@ -12,6 +12,7 @@ import (
 func InitStudentRouterHandler() *controller.StudentController {
 	wire.Build(
 		repository.NewStudentRepository,
+		repository.NewUniversityRepository,
 		service.NewStudentService,
 		controller.NewStudentController,
 	)

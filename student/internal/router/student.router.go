@@ -10,7 +10,7 @@ type StudentRouter struct {
 
 func (ur *StudentRouter) InitStudentRouter(Router *gin.RouterGroup) {
 	studentController := wire.InitStudentRouterHandler()
-	studentRouter := Router.Group("/book")
+	studentRouter := Router.Group("/student")
 	{
 		studentRouter.GET("", studentController.GetPageStudentWithFilter)
 		studentRouter.GET("/:student_id", studentController.GetStudentById)

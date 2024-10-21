@@ -16,7 +16,8 @@ import (
 
 func InitStudentRouterHandler() *controller.StudentController {
 	iStudentRepository := repository.NewStudentRepository()
-	iStudentService := service.NewStudentService(iStudentRepository)
+	iUniversityRepository := repository.NewUniversityRepository()
+	iStudentService := service.NewStudentService(iStudentRepository, iUniversityRepository)
 	studentController := controller.NewStudentController(iStudentService)
 	return studentController
 }

@@ -10,7 +10,7 @@ type UniversityRouter struct {
 
 func (ur *UniversityRouter) InitUniversityRouter(Router *gin.RouterGroup) {
 	universityController := wire.InitUniversityRouterHandler()
-	universityRouter := Router.Group("/book")
+	universityRouter := Router.Group("/university")
 	{
 		universityRouter.GET("/:university_id", universityController.GetUniversityById)
 		universityRouter.POST("", universityController.CreateUniversity)

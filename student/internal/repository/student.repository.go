@@ -26,18 +26,18 @@ func NewStudentRepository() IStudentRepository {
 	return &studentRepository{db: global.Db}
 }
 
-func (r *studentRepository) Create(ctx context.Context, student *model.Student) error {
+func (sr *studentRepository) Create(ctx context.Context, student *model.Student) error {
 	student.CreatedAt = time.Now()
 	student.UpdatedAt = time.Now()
-	if err := r.db.WithContext(ctx).Create(student).Error; err != nil {
+	if err := sr.db.WithContext(ctx).Create(student).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *studentRepository) FindByID(ctx context.Context, id int) (*model.Student, error) {
+func (sr *studentRepository) FindByID(ctx context.Context, id int) (*model.Student, error) {
 	var student model.Student
-	if err := r.db.WithContext(ctx).Preload("University").First(&student, id).Error; err != nil {
+	if err := sr.db.WithContext(ctx).Preload("University").First(&student, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -46,7 +46,7 @@ func (r *studentRepository) FindByID(ctx context.Context, id int) (*model.Studen
 	return &student, nil
 }
 
-func (s *studentRepository) FindPageByUniIdAndEnrollYear(ctx context.Context,
+func (sr *studentRepository) FindPageByUniIdAndEnrollYear(ctx context.Context,
 	universityId int,
 	enrollYear int,
 	page req.PageInfo,
@@ -55,7 +55,7 @@ func (s *studentRepository) FindPageByUniIdAndEnrollYear(ctx context.Context,
 	var students []model.Student
 	var total int64
 
-	if err := s.db.Where("university_id = ? AND enrollment_year = ?", universityId, enrollYear).Count(&total).Error; err != nil {
+	if err := sr.db.Model(students).Where("university_id = ? AND enrollment_year = ?", universityId, enrollYear).Count(&total).Error; err != nil {
 		return nil, err
 	}
 
@@ -63,7 +63,7 @@ func (s *studentRepository) FindPageByUniIdAndEnrollYear(ctx context.Context,
 
 	offset := (page.Page - 1) * page.Size
 
-	if err := s.db.WithContext(ctx).Preload("University").
+	if err := sr.db.WithContext(ctx).Preload("University").
 		Where("university_id = ? AND enrollment_year = ?", universityId, enrollYear).
 		Offset(int(offset)).Limit(int(page.Size)).
 		Find(&students).Error; err != nil {
@@ -74,7 +74,7 @@ func (s *studentRepository) FindPageByUniIdAndEnrollYear(ctx context.Context,
 		List:      students,
 		TotalPage: totalPage,
 		Page:      int(page.Page),
-		Size:      int(page.Size),
+		Size:      len(students),
 	}
 
 	return result, nil

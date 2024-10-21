@@ -27,16 +27,20 @@ func NewStudentService(studentRepository repository.IStudentRepository, universi
 	}
 }
 func (ss *studentService) CreateStudent(ctx context.Context, data *req.StudentPostDto) (*res.StudentDto, int, error) {
-	_, err := ss.universityRepository.FindByID(ctx, data.UniversityId)
+	university, err := ss.universityRepository.FindByID(ctx, data.UniversityId)
 	if err != nil {
+		return nil, response.CodeInternalServerError, err
+	}
+	if university == nil {
 		return nil, response.CodeUniversityNotFound, err
 	}
 
 	student := model.Student{
-		FullName:     data.FullName,
-		Sex:          data.Sex,
-		DOB:          data.Dob,
-		UniversityID: data.UniversityId,
+		FullName:       data.FullName,
+		Sex:            *data.Sex,
+		DOB:            data.Dob,
+		EnrollmentYear: data.EnrollmentYear,
+		University:     *university,
 	}
 	if err := ss.studentRepository.Create(ctx, &student); err != nil {
 		return nil, response.CodeInternalServerError, err
@@ -48,6 +52,9 @@ func (ss *studentService) CreateStudent(ctx context.Context, data *req.StudentPo
 func (ss *studentService) GetStudentById(ctx context.Context, studentId int) (*res.StudentDto, int, error) {
 	student, err := ss.studentRepository.FindByID(ctx, studentId)
 	if err != nil {
+		return nil, response.CodeInternalServerError, err
+	}
+	if student == nil {
 		return nil, response.CodeStudentNotFound, err
 	}
 	result := &res.StudentDto{}

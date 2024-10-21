@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS "universities" (
-    "id" integer PRIMARY KEY,
+    "id" serial PRIMARY KEY,
     "name" varchar NOT NULL DEFAULT '',
     "establishment_year" integer NOT NULL,
     "created_at" timestamp NOT NULL,

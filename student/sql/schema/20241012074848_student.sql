@@ -1,8 +1,8 @@
 -- +goose Up
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS "students" (
-    "id" integer PRIMARY KEY,
-    "fullname" varchar NOT NULL DEFAULT '',
+    "id" serial PRIMARY KEY,
+    "full_name" varchar NOT NULL DEFAULT '',
     "sex" smallint NOT NULL DEFAULT '0',
     "dob" date NOT NULL,
     "university_id" integer NOT NULL,

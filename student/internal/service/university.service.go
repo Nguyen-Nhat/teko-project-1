@@ -40,6 +40,9 @@ func (us *universityService) CreateUniversity(ctx context.Context, data *req.Uni
 func (us *universityService) GetUniversityById(ctx context.Context, id int) (*res.UniversityDto, int, error) {
 	university, err := us.universityRepository.FindByID(ctx, id)
 	if err != nil {
+		return nil, response.CodeInternalServerError, err
+	}
+	if university == nil {
 		return nil, response.CodeUniversityNotFound, err
 	}
 	result := &res.UniversityDto{}

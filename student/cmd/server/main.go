@@ -6,7 +6,7 @@ import (
 
 // @title           API Documentation Student Service Backend
 // @version         1.0
-// @description     This is a sample server celler server.
+// @description     This is a sample server seller server.
 // @termsOfService  https://github.com/Nguyen-Nhat/teko-project-1
 
 // @contact.name   MINH NHAT TEAM WMS

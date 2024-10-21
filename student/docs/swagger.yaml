@@ -1,16 +1,227 @@
 basePath: /api/v1
+definitions:
+  req.StudentPostDto:
+    properties:
+      dob:
+        type: string
+      enrollment_year:
+        minimum: 1
+        type: integer
+      full_name:
+        minLength: 1
+        type: string
+      sex:
+        maximum: 2
+        minimum: 0
+        type: integer
+      university_id:
+        minimum: 1
+        type: integer
+    required:
+    - dob
+    - enrollment_year
+    - full_name
+    - sex
+    - university_id
+    type: object
+  req.UniversityPostDto:
+    properties:
+      establishment_year:
+        type: integer
+      name:
+        type: string
+    type: object
+  response.Data:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
 host: localhost:8081
 info:
   contact:
     email: nhat.ntm@teko.vn
     name: MINH NHAT TEAM WMS
     url: https://github.com/Nguyen-Nhat/teko-project-1
-  description: This is a sample server celler server.
+  description: This is a sample server seller server.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: https://github.com/Nguyen-Nhat/teko-project-1
   title: API Documentation Student Service Backend
   version: "1.0"
-paths: {}
+paths:
+  /student:
+    get:
+      consumes:
+      - application/json
+      description: Get Student With Filter
+      parameters:
+      - in: query
+        minimum: 1
+        name: enrollment_year
+        required: true
+        type: integer
+      - in: query
+        minimum: 1
+        name: page
+        type: integer
+      - in: query
+        minimum: 1
+        name: size
+        type: integer
+      - in: query
+        minimum: 1
+        name: university_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Get Student With Filter
+      tags:
+      - student
+    post:
+      consumes:
+      - application/json
+      description: Create student
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/req.StudentPostDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Create student
+      tags:
+      - student
+  /student/{student_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get Student By Id
+      parameters:
+      - description: Student Id
+        in: path
+        name: student_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Get Student By Id
+      tags:
+      - student
+  /university:
+    post:
+      consumes:
+      - application/json
+      description: Create university
+      parameters:
+      - description: payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/req.UniversityPostDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Create university
+      tags:
+      - university
+  /university/{university_id}:
+    get:
+      consumes:
+      - application/json
+      description: Get University By Id
+      parameters:
+      - description: University Id
+        in: path
+        name: university_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Data'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Data'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.Data'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Data'
+      summary: Get University By Id
+      tags:
+      - university
 swagger: "2.0"

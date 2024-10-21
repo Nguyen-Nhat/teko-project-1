@@ -1,6 +1,6 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TABLE IF NOT EXISTS "Student" (
+CREATE TABLE IF NOT EXISTS "students" (
     "id" integer PRIMARY KEY,
     "fullname" varchar NOT NULL DEFAULT '',
     "sex" smallint NOT NULL DEFAULT '0',
@@ -14,5 +14,5 @@ CREATE TABLE IF NOT EXISTS "Student" (
 
 -- +goose Down
 -- +goose StatementBegin
-DROP TABLE IF EXISTS "Student";
+DROP TABLE IF EXISTS "students";
 -- +goose StatementEnd

@@ -4,7 +4,10 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
+	"math"
 	"student/global"
+	"student/internal/dto/req"
+	"student/internal/dto/res"
 	"student/internal/model"
 	"time"
 )
@@ -12,9 +15,7 @@ import (
 type IStudentRepository interface {
 	Create(ctx context.Context, student *model.Student) error
 	FindByID(ctx context.Context, id int) (*model.Student, error)
-	FindAll(ctx context.Context) ([]model.Student, error)
-	Update(ctx context.Context, student *model.Student) error
-	Delete(ctx context.Context, id int) error
+	FindPageByUniIdAndEnrollYear(ctx context.Context, universityId int, enrollYear int, page req.PageInfo) (*res.PageResult[model.Student], error)
 }
 
 type studentRepository struct {
@@ -45,25 +46,36 @@ func (r *studentRepository) FindByID(ctx context.Context, id int) (*model.Studen
 	return &student, nil
 }
 
-func (r *studentRepository) FindAll(ctx context.Context) ([]model.Student, error) {
+func (s *studentRepository) FindPageByUniIdAndEnrollYear(ctx context.Context,
+	universityId int,
+	enrollYear int,
+	page req.PageInfo,
+) (*res.PageResult[model.Student], error) {
+
 	var students []model.Student
-	if err := r.db.WithContext(ctx).Preload("University").Find(&students).Error; err != nil {
+	var total int64
+
+	if err := s.db.Where("university_id = ? AND enrollment_year = ?", universityId, enrollYear).Count(&total).Error; err != nil {
 		return nil, err
 	}
-	return students, nil
-}
 
-func (r *studentRepository) Update(ctx context.Context, student *model.Student) error {
-	student.UpdatedAt = time.Now()
-	if err := r.db.WithContext(ctx).Save(student).Error; err != nil {
-		return err
-	}
-	return nil
-}
+	totalPage := int(math.Ceil(float64(total) / float64(page.Size)))
 
-func (r *studentRepository) Delete(ctx context.Context, id int) error {
-	if err := r.db.WithContext(ctx).Delete(&model.Student{}, id).Error; err != nil {
-		return err
+	offset := (page.Page - 1) * page.Size
+
+	if err := s.db.WithContext(ctx).Preload("University").
+		Where("university_id = ? AND enrollment_year = ?", universityId, enrollYear).
+		Offset(int(offset)).Limit(int(page.Size)).
+		Find(&students).Error; err != nil {
+		return nil, err
 	}
-	return nil
+
+	result := &res.PageResult[model.Student]{
+		List:      students,
+		TotalPage: totalPage,
+		Page:      int(page.Page),
+		Size:      int(page.Size),
+	}
+
+	return result, nil
 }

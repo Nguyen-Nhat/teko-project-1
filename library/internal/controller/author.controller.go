@@ -61,7 +61,7 @@ func (ac *AuthorController) CreateAuthor(ctx *gin.Context) {
 func (ac *AuthorController) GetAuthorById(ctx *gin.Context) {
 	authorIdStr := ctx.Param("author_id")
 	authorId, err := strconv.Atoi(authorIdStr)
-	if err != nil {
+	if err != nil || authorId <= 0 {
 		response.Response(ctx, response.CodeInvalidPathVariable, nil)
 		return
 	}
